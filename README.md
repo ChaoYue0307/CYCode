@@ -70,6 +70,13 @@ git clone https://github.com/ChaoYue0307/CYCode && cd CYCode
 npm install && npm run build && npm link    # then: cycode
 ```
 
+Then get set up in two commands:
+
+```sh
+cycode init      # scaffold .cycode/config.json + AGENTS.md (detects your keys)
+cycode doctor    # check keys, git, sandbox, and optional tools
+```
+
 Optional extras used when present: `rg` (faster grep), `latexmk`, `jupyter`.
 *(npm registry publication is planned.)*
 
@@ -205,8 +212,9 @@ CYCode doesn't try to beat the big harnesses at general software engineering —
 - [x] Eval harness — verifiable task benchmark with a pass-rate
 - [x] Built-in Chinese providers (DeepSeek, Qwen, GLM, Kimi, Doubao, ERNIE, …)
 - [x] Trust layer — per-turn git checkpoints with `undo` / `diff`
+- [x] `cycode init` / `cycode doctor` onboarding
+- [x] Reliability — `multi_edit`, line-ending-tolerant edits, configurable retries
 - [ ] Vision/multimodal input (read plots, figures, architecture diagrams)
-- [ ] `cycode init` / `cycode doctor` onboarding
 - [ ] npm package release (`npm i -g cycode`)
 - [ ] Native desktop app (Tauri) wrapping the GUI
 - [ ] TensorBoard event-file metrics in `exp_status`

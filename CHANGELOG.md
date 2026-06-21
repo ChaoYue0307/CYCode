@@ -6,6 +6,24 @@ All notable changes to CYCode are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-06-12
+
+### Added
+- **`cycode init`** — scaffolds `.cycode/config.json` and `AGENTS.md`, detecting an
+  available provider key and picking a default model (`--force` to overwrite).
+- **`cycode doctor`** — health check: provider keys, default model, git
+  (checkpoints), ripgrep, sandbox backend, latexmk/jupyter, Tavily, config validity.
+- **`multi_edit` tool** — apply several exact edits to one file atomically
+  (all-or-nothing).
+- **Line-ending tolerance** in `edit`/`multi_edit` — CRLF/LF mismatches between
+  `old_string` and the file no longer cause spurious "not found" failures.
+- **Configurable retries** (`retries`, default 3) on transient provider errors,
+  applied to both the turn loop and compaction.
+
+### Fixed
+- `cycode init --force` now re-detects the model from available keys instead of
+  inheriting an existing config's `model`.
+
 ## [0.8.0] - 2026-06-12
 
 ### Added
@@ -124,7 +142,8 @@ Initial release.
 - Post-edit diagnostics command with model feedback.
 - 51 vitest tests including mock-model agent-loop integration.
 
-[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.5.0...v0.6.0

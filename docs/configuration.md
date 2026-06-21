@@ -45,9 +45,16 @@ concatenate:
   },
 
   // override the context window used for compaction decisions
-  "contextWindow": 200000
+  "contextWindow": 200000,
+
+  // max automatic retries on transient provider errors (default 3)
+  "retries": 3
 }
 ```
+
+Run `cycode init` to generate a starter config (it detects your keys and picks a
+default model), and `cycode doctor` to check keys, git, the sandbox backend, and
+optional tools (`rg`, `latexmk`, `jupyter`).
 
 ## API keys
 

@@ -54,6 +54,8 @@ export interface CycodeConfig {
   providers?: Record<string, ProviderConfig>;
   /** Override the context window used for compaction decisions. */
   contextWindow?: number;
+  /** Max automatic retries on transient provider errors (default 3). */
+  retries?: number;
 }
 
 function readJson(file: string): CycodeConfig {

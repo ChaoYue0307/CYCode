@@ -14,9 +14,11 @@ export function shouldCompact(
 export async function summarizeConversation(
   model: LanguageModel,
   messages: ModelMessage[],
+  retries = 3,
 ): Promise<string> {
   const { text } = await generateText({
     model,
+    maxRetries: retries,
     system:
       "Summarize this coding-agent conversation so the agent can seamlessly continue. " +
       "Capture: the user's overall goal and constraints; what has been done so far " +

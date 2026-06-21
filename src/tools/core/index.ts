@@ -2,6 +2,7 @@ import type { CycodeTool } from "../types.js";
 import { readTool } from "./read.js";
 import { writeTool } from "./write.js";
 import { editTool } from "./edit.js";
+import { multiEditTool } from "./multi_edit.js";
 import { globTool } from "./glob.js";
 import { grepTool } from "./grep.js";
 import { bashTool } from "./bash.js";
@@ -12,6 +13,7 @@ export const coreTools: CycodeTool[] = [
   readTool,
   writeTool,
   editTool,
+  multiEditTool,
   globTool,
   grepTool,
   bashTool,
@@ -23,6 +25,7 @@ export {
   readTool,
   writeTool,
   editTool,
+  multiEditTool,
   globTool,
   grepTool,
   bashTool,

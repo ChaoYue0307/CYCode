@@ -31,7 +31,7 @@ export type PermissionArbiter = (
 ) => Promise<PermissionDecision>;
 
 /** Tools auto-approved in acceptEdits mode. */
-const EDIT_TOOLS = new Set(["write", "edit", "notebook_edit"]);
+const EDIT_TOOLS = new Set(["write", "edit", "multi_edit", "notebook_edit"]);
 
 /**
  * Rule grammar (Claude Code style):

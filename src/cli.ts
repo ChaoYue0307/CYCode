@@ -5,6 +5,8 @@ import { startGui } from "./gui/server.js";
 import { startRepl, type ArbiterRef } from "./tui/app.js";
 import { SessionStore } from "./session/store.js";
 import { CheckpointStore } from "./checkpoint/checkpoint.js";
+import { collectDiagnostics, formatDiagnostics } from "./doctor.js";
+import { runInit, formatInit } from "./init.js";
 import { PERMISSION_MODES, type PermissionMode } from "./permissions/permissions.js";
 import { VERSION } from "./version.js";
 
@@ -12,6 +14,8 @@ const USAGE = `cycode — an open-source terminal coding agent for AI research
 
 Usage:
   cycode [prompt]              interactive REPL (optional initial prompt)
+  cycode init                  scaffold .cycode/config.json and AGENTS.md
+  cycode doctor                check setup: keys, git, tools, sandbox
   cycode exec <prompt>         non-interactive: run one task and exit
   cycode ui                    local web GUI (http://127.0.0.1:7833)
   cycode sessions              list saved sessions for this project
@@ -39,7 +43,7 @@ Environment:
 `;
 
 interface ParsedArgs {
-  command: "repl" | "exec" | "ui" | "sessions" | "undo" | "diff";
+  command: "repl" | "exec" | "ui" | "sessions" | "undo" | "diff" | "init" | "doctor";
   prompt?: string;
   model?: string;
   mode?: PermissionMode;
@@ -51,6 +55,7 @@ interface ParsedArgs {
   port: number;
   open: boolean;
   sandbox: boolean;
+  force: boolean;
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
@@ -62,6 +67,7 @@ function parseArgs(argv: string[]): ParsedArgs {
     port: 7833,
     open: true,
     sandbox: false,
+    force: false,
   };
   const positional: string[] = [];
   for (let i = 0; i < argv.length; i++) {
@@ -119,13 +125,24 @@ function parseArgs(argv: string[]): ParsedArgs {
       case "--sandbox":
         args.sandbox = true;
         break;
+      case "--force":
+        args.force = true;
+        break;
       default:
         if (a.startsWith("-")) throw new Error(`Unknown option: ${a} (see --help)`);
         positional.push(a);
     }
   }
   const first = positional[0];
-  if (first === "exec" || first === "ui" || first === "sessions" || first === "undo" || first === "diff") {
+  if (
+    first === "exec" ||
+    first === "ui" ||
+    first === "sessions" ||
+    first === "undo" ||
+    first === "diff" ||
+    first === "init" ||
+    first === "doctor"
+  ) {
     args.command = first;
     positional.shift();
   }
@@ -145,6 +162,16 @@ async function main(): Promise<void> {
     for (const s of sessions) {
       process.stdout.write(`${s.id}  ${s.createdAt}  ${s.model}\n`);
     }
+    return;
+  }
+
+  if (args.command === "doctor") {
+    process.stdout.write(formatDiagnostics(collectDiagnostics(args.cwd)) + "\n");
+    return;
+  }
+
+  if (args.command === "init") {
+    process.stdout.write(formatInit(runInit(args.cwd, args.force)) + "\n");
     return;
   }
 

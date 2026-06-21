@@ -10,7 +10,8 @@ apply); all others require approval via mode, allow-rule, or interactive prompt.
 |---|---|---|---|
 | `read` | ✅ | Read a file as numbered lines (max 2000/call, use `offset`/`limit`) | `file_path`, `offset?`, `limit?` |
 | `write` | ❌ | Create/overwrite a file, creating parent dirs | `file_path`, `content` |
-| `edit` | ❌ | Exact-string replacement; `old_string` must be unique unless `replace_all` | `file_path`, `old_string`, `new_string`, `replace_all?` |
+| `edit` | ❌ | Exact-string replacement; `old_string` must be unique unless `replace_all`. CRLF/LF mismatches tolerated | `file_path`, `old_string`, `new_string`, `replace_all?` |
+| `multi_edit` | ❌ | Apply several exact edits to one file atomically (all-or-nothing) | `file_path`, `edits[]` |
 | `glob` | ✅ | Find files by pattern, newest first (max 200) | `pattern`, `path?` |
 | `grep` | ✅ | Regex search returning `file:line:text` (ripgrep when available, JS fallback) | `pattern`, `path?`, `glob?`, `ignore_case?` |
 | `bash` | ❌ | Run a shell command from the project dir; combined output, middle-truncated at 30 KB | `command`, `timeout_ms?` (default 120s, max 600s) |

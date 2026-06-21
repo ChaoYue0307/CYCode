@@ -162,6 +162,7 @@ export class Agent {
     const summary = await summarizeConversation(
       this.opts.smallModel ?? this.model,
       this.messages,
+      this.opts.config.retries ?? 3,
     );
     this.messages = [
       {
@@ -203,6 +204,7 @@ export class Agent {
           system: this.systemPrompt,
           messages: this.messages,
           tools: this.aiTools,
+          maxRetries: this.opts.config.retries ?? 3,
           abortSignal: signal,
           // errors surface as 'error' stream parts handled below; the SDK default
           // would also dump them to console.error, corrupting the TUI
