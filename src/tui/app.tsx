@@ -3,6 +3,7 @@ import { Box, Static, Text, render, useApp, useInput } from "ink";
 import TextInput from "ink-text-input";
 import path from "node:path";
 import type { Runtime } from "../runtime.js";
+import { errorMessage } from "../util/errors.js";
 import type { AgentEvent, TodoItem } from "../agent/events.js";
 import {
   PERMISSION_MODES,
@@ -219,7 +220,7 @@ function App(props: {
             setModelSpec(arg);
             push({ kind: "notice", text: `Model switched to ${arg}` });
           } catch (err) {
-            push({ kind: "error", text: err instanceof Error ? err.message : String(err) });
+            push({ kind: "error", text: errorMessage(err) });
           }
           return true;
         }

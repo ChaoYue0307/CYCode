@@ -8,6 +8,7 @@ import {
   type ToolSet,
 } from "ai";
 import type { CycodeConfig } from "../config.js";
+import { errorMessage } from "../util/errors.js";
 import type { CycodeTool, ToolContext } from "../tools/types.js";
 import { describeCall, permissionKeyFor } from "../tools/types.js";
 import { runHooks } from "./hooks.js";
@@ -243,7 +244,7 @@ export class Agent {
             case "error":
               throw part.error instanceof Error
                 ? part.error
-                : new Error(String(part.error));
+                : new Error(errorMessage(part.error));
           }
         }
         if (stepText) {
@@ -289,7 +290,7 @@ export class Agent {
         this.emit({ type: "notice", message: "Interrupted" });
         return finalText;
       }
-      const message = err instanceof Error ? err.message : String(err);
+      const message = errorMessage(err);
       this.emit({ type: "error", message });
       throw err;
     } finally {
@@ -399,7 +400,7 @@ export class Agent {
       });
       return { type: "tool-result", ...base, output: { type: "text", value: output } };
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const message = errorMessage(err);
       this.emit({
         type: "tool-end",
         callId: call.toolCallId,

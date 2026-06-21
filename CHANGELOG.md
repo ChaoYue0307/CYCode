@@ -6,6 +6,14 @@ All notable changes to CYCode are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-06-21
+
+### Fixed
+- Provider/stream errors no longer display as the useless `[object Object]`. A new
+  `errorMessage()` helper extracts a real message from non-Error objects the
+  provider SDKs sometimes emit (e.g. auth failures, rate limits), used across the
+  turn loop, REPL, and exec output.
+
 ## [0.9.0] - 2026-06-12
 
 ### Added
@@ -142,7 +150,8 @@ Initial release.
 - Post-edit diagnostics command with model feedback.
 - 51 vitest tests including mock-model agent-loop integration.
 
-[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/ChaoYue0307/CYCode/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.6.0...v0.7.0

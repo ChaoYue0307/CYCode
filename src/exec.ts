@@ -1,5 +1,6 @@
 import { createRuntime } from "./runtime.js";
 import { expandSlashCommand } from "./skills/skills.js";
+import { errorMessage } from "./util/errors.js";
 import type { PermissionMode } from "./permissions/permissions.js";
 
 export interface ExecOptions {
@@ -78,7 +79,7 @@ export async function runExec(opts: ExecOptions): Promise<number> {
   } catch (err) {
     exitCode = 1;
     if (!opts.json) {
-      process.stderr.write(`[cycode] fatal: ${err instanceof Error ? err.message : err}\n`);
+      process.stderr.write(`[cycode] fatal: ${errorMessage(err)}\n`);
     }
   } finally {
     await runtime.close();
