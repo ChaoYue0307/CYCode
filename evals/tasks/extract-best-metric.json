@@ -1,0 +1,12 @@
+{
+  "name": "extract-best-metric",
+  "category": "research",
+  "prompt": "Read experiment.log and write the single best (highest) validation accuracy value it reports into result.txt, as just the number.",
+  "setup": {
+    "experiment.log": "epoch 1 val_acc=0.612\nepoch 2 val_acc=0.781\nepoch 3 val_acc=0.864\nepoch 4 val_acc=0.859\nepoch 5 val_acc=0.871\n"
+  },
+  "checks": [
+    { "type": "file_exists", "path": "result.txt" },
+    { "type": "file_contains", "path": "result.txt", "text": "0.871" }
+  ]
+}

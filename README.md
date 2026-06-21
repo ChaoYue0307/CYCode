@@ -183,6 +183,8 @@ CYCode doesn't try to beat the big harnesses at general software engineering —
 - [x] Runtime model switching (`/model`) and session token tracking
 - [x] OS-level bash sandboxing (macOS Seatbelt / Linux bubblewrap, `--sandbox`)
 - [x] wandb local-run metrics in `exp_status` (offline, no API key)
+- [x] Eval harness — verifiable task benchmark with a pass-rate
+- [ ] Vision/multimodal input (read plots, figures, architecture diagrams)
 - [ ] npm package release (`npm i -g cycode`)
 - [ ] Native desktop app (Tauri) wrapping the GUI
 - [ ] TensorBoard event-file metrics in `exp_status`
@@ -212,6 +214,8 @@ npm run dev          # tsx src/cli.ts
 npm test             # vitest — 51 tests, no API key needed (mock model)
 npm run typecheck && npm run lint && npm run build
 ```
+
+**Evals** — a small benchmark drives the real agent against verifiable tasks so changes can be judged by a pass-rate, not a vibe: `npm run eval` (see [docs/evals.md](docs/evals.md)).
 
 Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Security reports: [SECURITY.md](SECURITY.md).
 

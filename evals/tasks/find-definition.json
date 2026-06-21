@@ -1,0 +1,13 @@
+{
+  "name": "find-definition",
+  "category": "search",
+  "prompt": "Which file defines the function that computes a factorial? Answer with just the file path.",
+  "setup": {
+    "src/strings.py": "def reverse(s):\n    return s[::-1]\n",
+    "src/numbers.py": "def factorial(n):\n    return 1 if n <= 1 else n * factorial(n - 1)\n\ndef is_prime(n):\n    return n > 1 and all(n % i for i in range(2, n))\n",
+    "main.py": "from src.numbers import factorial\nprint(factorial(5))\n"
+  },
+  "checks": [
+    { "type": "answer_contains", "text": "src/numbers.py" }
+  ]
+}

@@ -6,6 +6,16 @@ All notable changes to CYCode are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-06-12
+
+### Added
+- **Eval harness** (`npm run eval`): declarative task fixtures in `evals/tasks/`,
+  checker primitives (`bash`, `file_contains`/`file_not_contains`, `file_exists`,
+  `answer_contains`), and a runner that drives the real `cycode exec` in isolated
+  temp workspaces and reports a pass-rate. Pure check/loader logic is unit-tested;
+  live runs are gated on a provider key (skips cleanly without one). A manual,
+  secret-gated `Evals` CI workflow produces a JSON report artifact.
+
 ## [0.4.0] - 2026-06-12
 
 ### Added
@@ -79,7 +89,8 @@ Initial release.
 - Post-edit diagnostics command with model feedback.
 - 51 vitest tests including mock-model agent-loop integration.
 
-[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.1.0...v0.2.0

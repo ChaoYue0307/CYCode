@@ -1,6 +1,6 @@
 {
   "name": "cycode",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "CYCode — an open-source terminal coding agent for AI research: papers, experiments, notebooks, LaTeX, and code.",
   "type": "module",
   "license": "MIT",
@@ -44,8 +44,9 @@
     "dev": "tsx src/cli.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "eval": "tsx evals/runner.ts",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src test",
+    "lint": "eslint src test evals",
     "prepublishOnly": "npm run typecheck && npm run test && npm run build",
     "gen": "node scripts/gen-builtin-skills.mjs"
   },

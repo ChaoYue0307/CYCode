@@ -1,0 +1,13 @@
+{
+  "name": "rename-function",
+  "category": "code",
+  "prompt": "Rename the function `compute_score` to `score` across the whole project, including all call sites. The code must still run.",
+  "setup": {
+    "scoring.py": "def compute_score(xs):\n    return sum(xs) / len(xs)\n",
+    "app.py": "from scoring import compute_score\n\nprint(compute_score([1, 2, 3]))\n"
+  },
+  "checks": [
+    { "type": "bash", "command": "! grep -rq compute_score . " },
+    { "type": "bash", "command": "python3 app.py" }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "add-readme-section",
+  "category": "docs",
+  "prompt": "Add an '## Installation' section to README.md whose body contains the command `pip install widget`. Keep the existing content.",
+  "setup": {
+    "README.md": "# Widget\n\nA small widget library.\n\n## Usage\n\nImport it and go.\n"
+  },
+  "checks": [
+    { "type": "file_contains", "path": "README.md", "text": "## Installation" },
+    { "type": "file_contains", "path": "README.md", "text": "pip install widget" },
+    { "type": "file_contains", "path": "README.md", "text": "## Usage" }
+  ]
+}

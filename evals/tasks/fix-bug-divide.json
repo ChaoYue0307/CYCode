@@ -1,0 +1,14 @@
+{
+  "name": "fix-bug-divide",
+  "category": "code",
+  "prompt": "calc.py's divide() raises ZeroDivisionError on divide(1, 0). Make it return None for a zero divisor while keeping normal division correct. Don't change the function name or signature.",
+  "setup": {
+    "calc.py": "def divide(a, b):\n    return a / b\n"
+  },
+  "checks": [
+    {
+      "type": "bash",
+      "command": "python3 -c \"import calc; assert calc.divide(1, 0) is None; assert calc.divide(6, 2) == 3\""
+    }
+  ]
+}

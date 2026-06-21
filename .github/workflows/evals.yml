@@ -1,0 +1,38 @@
+name: Evals
+
+# Manually triggered so it never spends API budget on a normal push.
+# Requires the ANTHROPIC_API_KEY repository secret.
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: Model spec (provider/model-id)
+        default: anthropic/claude-haiku-4-5-20251001
+      filter:
+        description: Only run tasks matching this name/category (optional)
+        default: ""
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm run eval -- \
+            --model "${{ github.event.inputs.model }}" \
+            ${{ github.event.inputs.filter && format('--filter {0}', github.event.inputs.filter) || '' }} \
+            --json-out eval-results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: eval-results.json

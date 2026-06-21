@@ -19,5 +19,5 @@
       "react-devtools-core": ["./scripts/empty-module.mjs"]
     }
   },
-  "include": ["src", "test"]
+  "include": ["src", "test", "evals"]
 }
