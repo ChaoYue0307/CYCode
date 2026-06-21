@@ -47,6 +47,8 @@ export interface CycodeConfig {
    * when the backend is unavailable.
    */
   sandbox?: { bash?: boolean; allowNetwork?: boolean };
+  /** Per-turn workspace snapshots (shadow git) enabling /undo and /diff. Default on. */
+  checkpoints?: { enabled?: boolean };
   mcpServers?: Record<string, McpServerConfig>;
   /** Extra OpenAI-compatible providers keyed by name. */
   providers?: Record<string, ProviderConfig>;

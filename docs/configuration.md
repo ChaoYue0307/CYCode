@@ -177,6 +177,22 @@ run, hooks veto specific calls deterministically, and the sandbox bounds what an
 command can touch even if the first two layers were misconfigured. For full
 autonomy inside a write-fence: `cycode exec "..." --mode bypass --sandbox`.
 
+## Checkpoints (undo)
+
+CYCode snapshots the workspace at the start of every turn into a **shadow git repo**
+under `~/.cycode/checkpoints/` — it never touches your project's own `.git` or history.
+So you can let the agent edit freely and roll back any turn:
+
+- **`/undo`** (REPL) or **`cycode undo`** (CLI) — revert the workspace to before the last
+  turn. Only the paths that actually changed are touched: modified/deleted files are
+  restored, files the agent added are removed; everything else is left alone.
+- **`/diff`** or **`cycode diff`** — show what changed since the last checkpoint.
+- **`/checkpoints`** — list recent snapshots.
+
+On by default; disable with `{ "checkpoints": { "enabled": false } }`. Requires `git`
+on PATH. Snapshots exclude `node_modules/`, `dist/`, `.git/`, `.cycode/`, virtualenvs,
+checkpoints, and large model files on top of your project's `.gitignore`.
+
 ## Context files
 
 CYCode loads into every session's system prompt:

@@ -35,6 +35,8 @@ export interface AgentOptions {
   contextWindow: number;
   /** Safety cap on model/tool round-trips per user turn. */
   maxStepsPerTurn?: number;
+  /** Called once at the start of each user turn (e.g. to snapshot a checkpoint). */
+  onTurnStart?: (userText: string) => void;
   onAlwaysAllow?: (rule: string) => void;
 }
 
@@ -182,6 +184,11 @@ export class Agent {
     let finalText = "";
 
     this.emit({ type: "turn-start" });
+    try {
+      this.opts.onTurnStart?.(userText);
+    } catch {
+      // checkpointing must never block a turn
+    }
     this.pushMessage({ role: "user", content: userText });
 
     try {

@@ -12,6 +12,7 @@ import { buildSystemPrompt, loadContextFiles } from "./context/context.js";
 import { loadSkills, type Skill } from "./skills/skills.js";
 import { connectMcpServers } from "./mcp/client.js";
 import { SessionStore } from "./session/store.js";
+import { CheckpointStore } from "./checkpoint/checkpoint.js";
 import type { PermissionArbiter, PermissionMode } from "./permissions/permissions.js";
 
 export interface RuntimeOptions {
@@ -38,6 +39,8 @@ export interface Runtime {
   modelSpec: string;
   config: CycodeConfig;
   session?: SessionStore;
+  /** Per-turn workspace snapshots for /undo and /diff (undefined if disabled/unavailable). */
+  checkpoint?: CheckpointStore;
   /** Hot-swap the model; throws on an invalid spec. Updates `modelSpec`. */
   switchModel: (spec: string) => void;
   close: () => Promise<void>;
@@ -80,6 +83,10 @@ export async function createRuntime(opts: RuntimeOptions): Promise<Runtime> {
     }
   }
 
+  const checkpoint =
+    config.checkpoints?.enabled === false ? undefined : CheckpointStore.create(opts.cwd);
+  const checkpointStore = checkpoint?.available ? checkpoint : undefined;
+
   const bus = new EventBus();
   const agent = new Agent({
     cwd: opts.cwd,
@@ -100,6 +107,7 @@ export async function createRuntime(opts: RuntimeOptions): Promise<Runtime> {
     session,
     contextWindow,
     maxStepsPerTurn: opts.maxStepsPerTurn,
+    onTurnStart: checkpointStore ? (text) => checkpointStore.snapshot(text) : undefined,
     onAlwaysAllow: (rule) => saveProjectPermission(opts.cwd, rule),
   });
 
@@ -110,6 +118,7 @@ export async function createRuntime(opts: RuntimeOptions): Promise<Runtime> {
     modelSpec,
     config,
     session,
+    checkpoint: checkpointStore,
     switchModel: (spec: string) => {
       const nextModel = resolveModel(spec, config);
       const nextWindow = getContextWindow(spec, config);

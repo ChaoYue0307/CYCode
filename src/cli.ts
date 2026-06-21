@@ -4,6 +4,7 @@ import { runExec } from "./exec.js";
 import { startGui } from "./gui/server.js";
 import { startRepl, type ArbiterRef } from "./tui/app.js";
 import { SessionStore } from "./session/store.js";
+import { CheckpointStore } from "./checkpoint/checkpoint.js";
 import { PERMISSION_MODES, type PermissionMode } from "./permissions/permissions.js";
 import { VERSION } from "./version.js";
 
@@ -14,6 +15,8 @@ Usage:
   cycode exec <prompt>         non-interactive: run one task and exit
   cycode ui                    local web GUI (http://127.0.0.1:7833)
   cycode sessions              list saved sessions for this project
+  cycode undo                  revert the workspace to before the last turn
+  cycode diff                  show changes since the last checkpoint
 
 Options:
   -m, --model <spec>           model as provider/model-id (e.g. anthropic/claude-sonnet-4-6)
@@ -36,7 +39,7 @@ Environment:
 `;
 
 interface ParsedArgs {
-  command: "repl" | "exec" | "ui" | "sessions";
+  command: "repl" | "exec" | "ui" | "sessions" | "undo" | "diff";
   prompt?: string;
   model?: string;
   mode?: PermissionMode;
@@ -122,7 +125,7 @@ function parseArgs(argv: string[]): ParsedArgs {
     }
   }
   const first = positional[0];
-  if (first === "exec" || first === "ui" || first === "sessions") {
+  if (first === "exec" || first === "ui" || first === "sessions" || first === "undo" || first === "diff") {
     args.command = first;
     positional.shift();
   }
@@ -141,6 +144,32 @@ async function main(): Promise<void> {
     }
     for (const s of sessions) {
       process.stdout.write(`${s.id}  ${s.createdAt}  ${s.model}\n`);
+    }
+    return;
+  }
+
+  if (args.command === "undo" || args.command === "diff") {
+    const checkpoint = CheckpointStore.create(args.cwd);
+    if (!checkpoint.available) {
+      process.stderr.write("Checkpoints unavailable: git is not installed.\n");
+      process.exit(1);
+    }
+    if (args.command === "diff") {
+      process.stdout.write(checkpoint.diff() + "\n");
+      return;
+    }
+    const { restored, removed } = checkpoint.restore();
+    const n = restored.length + removed.length;
+    if (n === 0) {
+      process.stdout.write("Nothing to undo since the last checkpoint.\n");
+    } else {
+      process.stdout.write(
+        `Reverted ${n} file(s).\n` +
+          restored.map((f) => `  restored ${f}`).join("\n") +
+          (restored.length && removed.length ? "\n" : "") +
+          removed.map((f) => `  removed  ${f}`).join("\n") +
+          "\n",
+      );
     }
     return;
   }

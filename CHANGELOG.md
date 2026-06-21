@@ -6,6 +6,17 @@ All notable changes to CYCode are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-06-12
+
+### Added
+- **Trust layer: per-turn checkpoints with undo/diff.** CYCode snapshots the
+  workspace at the start of every turn into a shadow git repo under
+  `~/.cycode/checkpoints/` (never touches the project's own `.git`). New
+  `cycode undo` / `cycode diff` CLI commands and `/undo`, `/diff`, `/checkpoints`
+  REPL commands. Undo touches only changed paths — modified/deleted files
+  restored, added files removed, everything else left alone. On by default
+  (needs `git`); disable with `{ "checkpoints": { "enabled": false } }`.
+
 ## [0.7.0] - 2026-06-12
 
 ### Added
@@ -113,7 +124,8 @@ Initial release.
 - Post-edit diagnostics command with model feedback.
 - 51 vitest tests including mock-model agent-loop integration.
 
-[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.4.0...v0.5.0

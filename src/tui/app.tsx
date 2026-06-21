@@ -35,6 +35,9 @@ const HELP = `Commands:
   /model <spec>      switch model (provider/model-id)
   /mode [mode]       show or set permission mode (${PERMISSION_MODES.join(" | ")})
   /compact           summarize the conversation to free context
+  /undo              revert the workspace to before the last turn
+  /diff              show what changed since the last checkpoint
+  /checkpoints       list recent workspace checkpoints
   /clear             clear the screen log (history is kept)
   /skills            list available skills
   /quit              exit
@@ -238,6 +241,44 @@ function App(props: {
                     .join("\n"),
           });
           return true;
+        case "/undo": {
+          if (!runtime.checkpoint) {
+            push({ kind: "notice", text: "Checkpoints are unavailable (git not found or disabled)" });
+            return true;
+          }
+          const { restored, removed } = runtime.checkpoint.restore();
+          const n = restored.length + removed.length;
+          push({
+            kind: "notice",
+            text: n === 0
+              ? "Nothing to undo since the last checkpoint"
+              : `Reverted ${n} file(s): ${[...restored, ...removed.map((f) => `${f} (removed)`)].slice(0, 8).join(", ")}${n > 8 ? "…" : ""}`,
+          });
+          return true;
+        }
+        case "/diff": {
+          if (!runtime.checkpoint) {
+            push({ kind: "notice", text: "Checkpoints are unavailable (git not found or disabled)" });
+            return true;
+          }
+          const diff = runtime.checkpoint.diff();
+          push({ kind: "notice", text: diff.length > 4000 ? diff.slice(0, 4000) + "\n…(truncated)" : diff });
+          return true;
+        }
+        case "/checkpoints": {
+          if (!runtime.checkpoint) {
+            push({ kind: "notice", text: "Checkpoints are unavailable (git not found or disabled)" });
+            return true;
+          }
+          const list = runtime.checkpoint.list();
+          push({
+            kind: "notice",
+            text: list.length === 0
+              ? "No checkpoints yet"
+              : list.map((c) => `${c.hash}  ${c.when}  ${c.label}`).join("\n"),
+          });
+          return true;
+        }
         default:
           return false;
       }

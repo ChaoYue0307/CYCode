@@ -150,6 +150,20 @@ Skills are markdown prompts with YAML frontmatter (the same shape Claude Code us
 
 Built-ins: **`/lit-review`** · **`/watch-run`** · **`/paper-draft`** · **`/repro-check`** — see [docs/skills.md](docs/skills.md) for the format and a writing guide.
 
+## Undo anything
+
+CYCode snapshots the workspace before every turn into a shadow git repo (never touching
+your project's `.git`), so you can let it edit freely and roll back:
+
+```sh
+cycode diff      # what did the last turn change?
+cycode undo      # revert the workspace to before the last turn
+```
+
+`/undo`, `/diff`, and `/checkpoints` work inside the REPL too. Undo touches only the
+files that actually changed — modified/deleted files are restored, added files removed,
+everything else untouched. On by default; needs `git`. See [docs](docs/configuration.md#checkpoints-undo).
+
 ## Sessions
 
 Every interactive session is an append-only JSONL rollout under `~/.cycode/sessions/<project>/` — kill the terminal mid-task and `cycode -c` picks up exactly where it left off. Long conversations auto-compact at ~80% of the context window. `cycode sessions` lists history; `--resume <id>` reopens any of them.
@@ -189,7 +203,10 @@ CYCode doesn't try to beat the big harnesses at general software engineering —
 - [x] OS-level bash sandboxing (macOS Seatbelt / Linux bubblewrap, `--sandbox`)
 - [x] wandb local-run metrics in `exp_status` (offline, no API key)
 - [x] Eval harness — verifiable task benchmark with a pass-rate
+- [x] Built-in Chinese providers (DeepSeek, Qwen, GLM, Kimi, Doubao, ERNIE, …)
+- [x] Trust layer — per-turn git checkpoints with `undo` / `diff`
 - [ ] Vision/multimodal input (read plots, figures, architecture diagrams)
+- [ ] `cycode init` / `cycode doctor` onboarding
 - [ ] npm package release (`npm i -g cycode`)
 - [ ] Native desktop app (Tauri) wrapping the GUI
 - [ ] TensorBoard event-file metrics in `exp_status`
