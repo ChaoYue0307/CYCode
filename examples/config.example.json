@@ -12,6 +12,12 @@
     "openai": { "apiKey": "sk-..." },
     "google": { "apiKey": "..." },
     "openrouter": { "apiKey": "sk-or-..." },
+    "deepseek": { "apiKey": "sk-..." },
+    "qwen": { "apiKey": "sk-..." },
+    "zhipu": { "apiKey": "..." },
+    "moonshot": { "apiKey": "sk-..." },
+    "doubao": { "apiKey": "..." },
+    "ernie": { "apiKey": "bce-v3/..." },
     "ollama": { "baseURL": "http://localhost:11434/v1" },
     "vllm": { "baseURL": "http://localhost:8000/v1", "apiKeyEnv": "VLLM_API_KEY" }
   }

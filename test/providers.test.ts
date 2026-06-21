@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+  ALIASES,
+  canonicalProvider,
+  COMPATIBLE,
   DEFAULT_KEY_ENV,
   defaultModelSpec,
   hasKey,
@@ -100,5 +103,82 @@ describe("provider API key resolution", () => {
     expect(() =>
       resolveModel("mystery/model", { providers: { mystery: { baseURL: "http://x/v1" } } }),
     ).not.toThrow();
+  });
+});
+
+describe("Chinese providers as built-ins", () => {
+  const saved: Record<string, string | undefined> = {};
+  const allKeyEnvs = Object.values(DEFAULT_KEY_ENV);
+
+  beforeEach(() => {
+    for (const k of allKeyEnvs) {
+      saved[k] = process.env[k];
+      delete process.env[k];
+    }
+  });
+  afterEach(() => {
+    for (const [k, v] of Object.entries(saved)) {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    }
+  });
+
+  const chinese = [
+    "deepseek",
+    "qwen",
+    "zhipu",
+    "moonshot",
+    "minimax",
+    "hunyuan",
+    "doubao",
+    "ernie",
+    "siliconflow",
+    "stepfun",
+    "baichuan",
+    "yi",
+  ];
+
+  it("registers every major Chinese provider with an endpoint and key env", () => {
+    for (const p of chinese) {
+      expect(COMPATIBLE[p]?.baseURL).toMatch(/^https:\/\//);
+      expect(DEFAULT_KEY_ENV[p]).toBeTruthy();
+    }
+  });
+
+  it("builds a model for each via a config key, with the built-in baseURL", () => {
+    for (const p of chinese) {
+      const cfg: CycodeConfig = { providers: { [p]: { apiKey: "k" } } };
+      expect(() => resolveModel(`${p}/some-model`, cfg)).not.toThrow();
+    }
+  });
+
+  it("resolves aliases to canonical providers", () => {
+    expect(canonicalProvider("dashscope")).toBe("qwen");
+    expect(canonicalProvider("glm")).toBe("zhipu");
+    expect(canonicalProvider("kimi")).toBe("moonshot");
+    expect(canonicalProvider("ark")).toBe("doubao");
+    expect(canonicalProvider("qianfan")).toBe("ernie");
+    // an alias spec builds the same provider
+    expect(() =>
+      resolveModel("kimi/kimi-k2", { providers: { moonshot: { apiKey: "k" } } }),
+    ).not.toThrow();
+  });
+
+  it("reads keys from each provider's default env var", () => {
+    process.env.DEEPSEEK_API_KEY = "ds";
+    expect(resolveApiKey("deepseek", undefined)).toBe("ds");
+    expect(hasKey("deepseek", {})).toBe(true);
+    expect(hasKey("qwen", {})).toBe(false);
+  });
+
+  it("defaults to a Chinese provider when only its key is present", () => {
+    process.env.DEEPSEEK_API_KEY = "ds";
+    expect(defaultModelSpec({})).toBe("deepseek/deepseek-chat");
+  });
+
+  it("every alias points at a real provider", () => {
+    for (const target of Object.values(ALIASES)) {
+      expect(COMPATIBLE[target] ?? ["anthropic", "openai", "google"].includes(target)).toBeTruthy();
+    }
   });
 });

@@ -110,9 +110,14 @@ Specify models as `provider/model-id` — switch providers without changing anyt
 cycode --model anthropic/claude-sonnet-4-6
 cycode --model openai/gpt-5.1
 cycode --model google/gemini-2.5-pro
+cycode --model deepseek/deepseek-chat       # Chinese providers are built in…
+cycode --model qwen/qwen-max                 # …Qwen, Zhipu/GLM, Kimi, Doubao, ERNIE,
+cycode --model zhipu/glm-4.6                 #    Hunyuan, MiniMax, SiliconFlow, StepFun…
 cycode --model ollama/llama3.3              # local, via http://localhost:11434/v1
 cycode --model openrouter/anthropic/claude-sonnet-4-6
 ```
+
+**Built-in providers:** Anthropic, OpenAI, Google, OpenRouter, Ollama, and the major Chinese providers — **DeepSeek, Alibaba Qwen, Zhipu GLM, Moonshot Kimi, MiniMax, Tencent Hunyuan, ByteDance Doubao, Baidu ERNIE, SiliconFlow, StepFun, Baichuan, 01.AI Yi** — with endpoints baked in (just set a key). Full table in [docs/configuration.md](docs/configuration.md#chinese-providers-built-in).
 
 Every provider takes its API key from either an environment variable **or** the config file — set `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GOOGLE_GENERATIVE_AI_API_KEY` / `OPENROUTER_API_KEY`, or put the key under `providers.<name>.apiKey` in `~/.cycode/config.json`. Any OpenAI-compatible endpoint (vLLM, llama.cpp server, litellm proxy) can be added under `providers` too — handy for evaluating your own fine-tuned models as coding agents. See [docs/configuration.md](docs/configuration.md#api-keys).
 

@@ -67,11 +67,37 @@ whichever way you prefer. For a given provider, the key is resolved in this orde
 | Ollama (local) | `ollama/` | — (none needed) | `providers.ollama.baseURL` |
 | Any OpenAI-compatible | `<name>/` | via `apiKeyEnv` | `providers.<name>` + `baseURL` |
 
+### Chinese providers (built-in)
+
+Endpoints are baked in — just set a key and use `<provider>/<model-id>`. Defaults are the
+**mainland** endpoints; override `baseURL` for international regions (e.g. DashScope
+Singapore `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`, Moonshot
+`https://api.moonshot.ai/v1`, Zhipu `https://api.z.ai/api/paas/v4`).
+
+| Provider | Model prefix (+ aliases) | Default env var | Example model |
+|---|---|---|---|
+| DeepSeek | `deepseek/` | `DEEPSEEK_API_KEY` | `deepseek/deepseek-chat` |
+| Alibaba Qwen | `qwen/` (`dashscope`, `tongyi`) | `DASHSCOPE_API_KEY` | `qwen/qwen-max` |
+| Zhipu GLM | `zhipu/` (`glm`) | `ZHIPUAI_API_KEY` | `zhipu/glm-4.6` |
+| Moonshot Kimi | `moonshot/` (`kimi`) | `MOONSHOT_API_KEY` | `moonshot/kimi-k2` |
+| MiniMax | `minimax/` | `MINIMAX_API_KEY` | `minimax/minimax-m1` |
+| Tencent Hunyuan | `hunyuan/` | `HUNYUAN_API_KEY` | `hunyuan/hunyuan-turbos` |
+| ByteDance Doubao | `doubao/` (`ark`, `volcengine`) | `ARK_API_KEY` | `doubao/doubao-seed-2.0-pro` |
+| Baidu ERNIE | `ernie/` (`qianfan`, `wenxin`) | `QIANFAN_API_KEY` | `ernie/ernie-5.0` |
+| SiliconFlow | `siliconflow/` | `SILICONFLOW_API_KEY` | `siliconflow/deepseek-ai/DeepSeek-V3` |
+| StepFun | `stepfun/` (`step`) | `STEPFUN_API_KEY` | `stepfun/step-2` |
+| Baichuan | `baichuan/` | `BAICHUAN_API_KEY` | `baichuan/Baichuan4` |
+| 01.AI Yi | `yi/` (`01ai`, `lingyiwanwu`) | `YI_API_KEY` | `yi/yi-large` |
+
+Model ids change often — pass `--model <provider>/<id>` or set `model` in config with the
+exact id from the provider's docs. Example: `cycode --model deepseek/deepseek-chat`, or in
+config `{ "providers": { "deepseek": { "apiKey": "sk-..." } }, "model": "deepseek/deepseek-chat" }`.
+
 > **Keep keys in the user config** (`~/.cycode/config.json`), not a project config you
 > might commit. Environment variables remain the safest option for shared machines.
 
-When no `model` is set, CYCode defaults to the first provider that has a usable key
-(Anthropic → OpenAI → Google → OpenRouter).
+When no `model` is set, CYCode defaults to the first provider with a usable key
+(Anthropic → OpenAI → Google → DeepSeek → Qwen → Zhipu → Moonshot → OpenRouter).
 
 ### Other keys
 
