@@ -114,7 +114,7 @@ cycode --model ollama/llama3.3              # local, via http://localhost:11434/
 cycode --model openrouter/anthropic/claude-sonnet-4-6
 ```
 
-Any OpenAI-compatible endpoint (vLLM, llama.cpp server, litellm proxy) can be added under `providers` in [config](docs/configuration.md) — handy for evaluating your own fine-tuned models as coding agents.
+Every provider takes its API key from either an environment variable **or** the config file — set `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GOOGLE_GENERATIVE_AI_API_KEY` / `OPENROUTER_API_KEY`, or put the key under `providers.<name>.apiKey` in `~/.cycode/config.json`. Any OpenAI-compatible endpoint (vLLM, llama.cpp server, litellm proxy) can be added under `providers` too — handy for evaluating your own fine-tuned models as coding agents. See [docs/configuration.md](docs/configuration.md#api-keys).
 
 ## Permissions
 

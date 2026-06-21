@@ -8,6 +8,11 @@
   "diagnostics": { "command": "npm run typecheck", "timeoutMs": 60000 },
   "mcpServers": {},
   "providers": {
+    "anthropic": { "apiKey": "sk-ant-..." },
+    "openai": { "apiKey": "sk-..." },
+    "google": { "apiKey": "..." },
+    "openrouter": { "apiKey": "sk-or-..." },
+    "ollama": { "baseURL": "http://localhost:11434/v1" },
     "vllm": { "baseURL": "http://localhost:8000/v1", "apiKeyEnv": "VLLM_API_KEY" }
   }
 }

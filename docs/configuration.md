@@ -34,9 +34,14 @@ concatenate:
     "docs":   { "url": "http://localhost:3845/mcp" }
   },
 
-  // extra OpenAI-compatible providers, usable as --model vllm/my-model
+  // API keys + endpoints for any provider (see "API keys" below)
   "providers": {
-    "vllm": { "baseURL": "http://localhost:8000/v1", "apiKeyEnv": "VLLM_API_KEY" }
+    "anthropic":  { "apiKey": "sk-ant-..." },
+    "openai":     { "apiKey": "sk-..." },
+    "google":     { "apiKey": "..." },
+    "openrouter": { "apiKey": "sk-or-..." },
+    "ollama":     { "baseURL": "http://localhost:11434/v1" },
+    "vllm":       { "baseURL": "http://localhost:8000/v1", "apiKeyEnv": "VLLM_API_KEY" }
   },
 
   // override the context window used for compaction decisions
@@ -44,14 +49,34 @@ concatenate:
 }
 ```
 
-## Environment variables
+## API keys
+
+Every provider has both an environment-variable slot and a config slot — set a key
+whichever way you prefer. For a given provider, the key is resolved in this order:
+
+1. `providers.<name>.apiKeyEnv` — read from the named environment variable
+2. `providers.<name>.apiKey` — the literal key in config
+3. the provider's **default environment variable** (below)
+
+| Provider | Model prefix | Default env var | Config slot |
+|---|---|---|---|
+| Anthropic | `anthropic/` | `ANTHROPIC_API_KEY` | `providers.anthropic.apiKey` |
+| OpenAI | `openai/` | `OPENAI_API_KEY` | `providers.openai.apiKey` |
+| Google | `google/` | `GOOGLE_GENERATIVE_AI_API_KEY` | `providers.google.apiKey` |
+| OpenRouter | `openrouter/` | `OPENROUTER_API_KEY` | `providers.openrouter.apiKey` |
+| Ollama (local) | `ollama/` | — (none needed) | `providers.ollama.baseURL` |
+| Any OpenAI-compatible | `<name>/` | via `apiKeyEnv` | `providers.<name>` + `baseURL` |
+
+> **Keep keys in the user config** (`~/.cycode/config.json`), not a project config you
+> might commit. Environment variables remain the safest option for shared machines.
+
+When no `model` is set, CYCode defaults to the first provider that has a usable key
+(Anthropic → OpenAI → Google → OpenRouter).
+
+### Other keys
 
 | Variable | Purpose |
 |---|---|
-| `ANTHROPIC_API_KEY` | `anthropic/*` models (default provider when present) |
-| `OPENAI_API_KEY` | `openai/*` models |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | `google/*` models |
-| `OPENROUTER_API_KEY` | `openrouter/*` models |
 | `SEMANTIC_SCHOLAR_API_KEY` | higher rate limits for `semantic_scholar` (optional) |
 | `TAVILY_API_KEY` | enables the `web_search` tool (absent → tool not registered) |
 | `CYCODE_HOME` | relocate config/sessions/papers (default `~/.cycode`) |

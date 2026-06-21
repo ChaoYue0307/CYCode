@@ -6,6 +6,16 @@ All notable changes to CYCode are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-06-12
+
+### Added
+- **Uniform API-key configuration for every provider.** Anthropic, OpenAI, Google,
+  and OpenRouter can now take their key from `providers.<name>.apiKey` (literal) or
+  `apiKeyEnv` (env var name) in config — not just their default environment
+  variable, and no longer Anthropic-only. Resolution order per provider:
+  `apiKeyEnv` → `apiKey` → default env var. `defaultModelSpec` now also detects
+  config-provided keys, and the "no model configured" error points at both paths.
+
 ## [0.5.0] - 2026-06-12
 
 ### Added
@@ -89,7 +99,8 @@ Initial release.
 - Post-edit diagnostics command with model feedback.
 - 51 vitest tests including mock-model agent-loop integration.
 
-[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/ChaoYue0307/CYCode/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/ChaoYue0307/CYCode/compare/v0.2.0...v0.3.0

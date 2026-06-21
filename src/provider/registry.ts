@@ -3,7 +3,48 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { LanguageModel } from "ai";
-import type { CycodeConfig } from "../config.js";
+import type { CycodeConfig, ProviderConfig } from "../config.js";
+
+/** Default environment variable each built-in provider reads its key from. */
+export const DEFAULT_KEY_ENV: Record<string, string> = {
+  anthropic: "ANTHROPIC_API_KEY",
+  openai: "OPENAI_API_KEY",
+  google: "GOOGLE_GENERATIVE_AI_API_KEY",
+  openrouter: "OPENROUTER_API_KEY",
+};
+
+/** A sensible default model id per built-in provider, used when no model is configured. */
+const DEFAULT_MODEL: Record<string, string> = {
+  anthropic: "anthropic/claude-sonnet-4-6",
+  openai: "openai/gpt-5.1",
+  google: "google/gemini-2.5-pro",
+  openrouter: "openrouter/anthropic/claude-sonnet-4-6",
+};
+
+/**
+ * Resolve an API key for a provider. Precedence:
+ *   config providers.<name>.apiKeyEnv (env var) > providers.<name>.apiKey (literal)
+ *   > the provider's default env var.
+ * So every major provider — not just Anthropic — has a config slot and an env slot.
+ */
+export function resolveApiKey(
+  provider: string,
+  custom: ProviderConfig | undefined,
+): string | undefined {
+  if (custom?.apiKeyEnv && process.env[custom.apiKeyEnv]) {
+    return process.env[custom.apiKeyEnv];
+  }
+  if (custom?.apiKey) return custom.apiKey;
+  const defaultEnv = DEFAULT_KEY_ENV[provider];
+  if (defaultEnv && process.env[defaultEnv]) return process.env[defaultEnv];
+  return undefined;
+}
+
+/** Whether a usable key (or no key needed, e.g. ollama) is available for a provider. */
+export function hasKey(provider: string, config: CycodeConfig): boolean {
+  if (provider === "ollama") return true;
+  return resolveApiKey(provider, config.providers?.[provider]) !== undefined;
+}
 
 /**
  * Model specs are "provider/model-id", e.g.:
@@ -12,7 +53,7 @@ import type { CycodeConfig } from "../config.js";
  *   google/gemini-2.5-pro
  *   ollama/llama3.3
  *   openrouter/anthropic/claude-sonnet-4-6
- * Extra OpenAI-compatible providers can be defined in config.providers.
+ * Any provider's key and baseURL can be set under config.providers.<name>.
  */
 export function resolveModel(spec: string, config: CycodeConfig): LanguageModel {
   const slash = spec.indexOf("/");
@@ -24,31 +65,33 @@ export function resolveModel(spec: string, config: CycodeConfig): LanguageModel 
   const provider = spec.slice(0, slash);
   const modelId = spec.slice(slash + 1);
   const custom = config.providers?.[provider];
+  const apiKey = resolveApiKey(provider, custom);
 
   switch (provider) {
     case "anthropic":
-      return createAnthropic({ baseURL: custom?.baseURL })(modelId);
+      return createAnthropic({ apiKey, baseURL: custom?.baseURL })(modelId);
     case "openai":
-      return createOpenAI({ baseURL: custom?.baseURL })(modelId);
+      return createOpenAI({ apiKey, baseURL: custom?.baseURL })(modelId);
     case "google":
-      return createGoogleGenerativeAI({ baseURL: custom?.baseURL })(modelId);
+      return createGoogleGenerativeAI({ apiKey, baseURL: custom?.baseURL })(modelId);
     case "ollama":
       return createOpenAICompatible({
         name: "ollama",
+        apiKey: apiKey ?? "ollama",
         baseURL: custom?.baseURL ?? "http://localhost:11434/v1",
       })(modelId);
     case "openrouter":
       return createOpenAICompatible({
         name: "openrouter",
+        apiKey,
         baseURL: custom?.baseURL ?? "https://openrouter.ai/api/v1",
-        apiKey: process.env[custom?.apiKeyEnv ?? "OPENROUTER_API_KEY"],
       })(modelId);
     default: {
       if (custom?.baseURL) {
         return createOpenAICompatible({
           name: provider,
+          apiKey,
           baseURL: custom.baseURL,
-          apiKey: custom.apiKeyEnv ? process.env[custom.apiKeyEnv] : undefined,
         })(modelId);
       }
       throw new Error(
@@ -59,16 +102,16 @@ export function resolveModel(spec: string, config: CycodeConfig): LanguageModel 
   }
 }
 
-/** Pick a default model from config or whichever API key is present. */
+/** Pick a default model from config, or the first provider that has a usable key. */
 export function defaultModelSpec(config: CycodeConfig): string {
   if (config.model) return config.model;
-  if (process.env.ANTHROPIC_API_KEY) return "anthropic/claude-sonnet-4-6";
-  if (process.env.OPENAI_API_KEY) return "openai/gpt-5.1";
-  if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) return "google/gemini-2.5-pro";
-  if (process.env.OPENROUTER_API_KEY) return "openrouter/anthropic/claude-sonnet-4-6";
+  for (const provider of ["anthropic", "openai", "google", "openrouter"]) {
+    if (hasKey(provider, config)) return DEFAULT_MODEL[provider]!;
+  }
   throw new Error(
-    "No model configured. Set ANTHROPIC_API_KEY / OPENAI_API_KEY / GOOGLE_GENERATIVE_AI_API_KEY / " +
-      'OPENROUTER_API_KEY, or set "model" in ~/.cycode/config.json (e.g. "ollama/llama3.3").',
+    "No model configured. Set ANTHROPIC_API_KEY / OPENAI_API_KEY / " +
+      "GOOGLE_GENERATIVE_AI_API_KEY / OPENROUTER_API_KEY, add the key under " +
+      '"providers" in ~/.cycode/config.json, or set "model" to a local one (e.g. "ollama/llama3.3").',
   );
 }
 

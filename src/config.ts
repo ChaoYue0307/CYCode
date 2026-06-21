@@ -11,9 +11,11 @@ export interface McpServerConfig {
 }
 
 export interface ProviderConfig {
-  /** Base URL for an OpenAI-compatible endpoint. */
+  /** Base URL (override the default, or required for a custom OpenAI-compatible endpoint). */
   baseURL?: string;
-  /** Name of the environment variable holding the API key. */
+  /** API key, used literally. Prefer the user config (~/.cycode), never commit a project config with this set. */
+  apiKey?: string;
+  /** Name of an environment variable to read the API key from (takes precedence over apiKey). */
   apiKeyEnv?: string;
 }
 
