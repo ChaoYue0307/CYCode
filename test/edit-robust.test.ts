@@ -22,7 +22,10 @@ describe("applyEdit", () => {
   it("throws on no match and on ambiguous match", () => {
     expect(() => applyEdit("abc", { old_string: "zzz", new_string: "y" })).toThrow(/not found/);
     expect(() => applyEdit("x x x", { old_string: "x", new_string: "y" })).toThrow(/occurs 3 times/);
-    expect(() => applyEdit("x x", { old_string: "x", new_string: "y", replace_all: true }).content).not.toThrow;
+  });
+
+  it("replace_all replaces every occurrence", () => {
+    expect(applyEdit("x x x", { old_string: "x", new_string: "y", replace_all: true }).content).toBe("y y y");
   });
 
   it("rejects identical strings", () => {
